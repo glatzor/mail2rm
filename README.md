@@ -2,10 +2,10 @@ mail2rm
 =======
 
 mail2rm allows you to send PDF documents to your reMarkable device by email.
-The script is inteded for peaple who run an own mail transport agent MTA
-instance e.g. postfix. mail2rm is supposed to used as postfix filter. This
-allows you to run the script during mail delivery. If the upload fails you
-will get an undevliverable notice including the error message.
+The script is intended for people who run an own mail transport agent (MTA)
+instance e.g. postfix. mail2rm is supposed to be used as a postfix filter.
+This allows you to run the script during mail delivery. If the upload fails you
+will get an undeliverable notice including the error message.
 
 
 Installation
