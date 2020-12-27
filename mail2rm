@@ -1,0 +1,88 @@
+#!/usr/bin/python3
+"""mail2rm - send PDF documents via email to your reMarkable cloud"""
+# Copyright (C) 2020 Sebastian Heinlein <devel@glatzor.de>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+__author__ = "Sebastian Heinlein <devel@glatzor.de>"
+__state__ = "stable"
+
+import email
+import os
+import os.path
+import sys
+import subprocess
+import tempfile
+
+from optparse import OptionParser
+from pathlib import Path
+
+
+class Mail2reMarkable:
+
+    def run(self, sender, options):
+        if options.allowed_senders and sender.lower() not in options.allowed_senders:
+            print("Unallowed sender: %s" % sender)
+            sys.exit(1)
+
+        mail = email.message_from_string(sys.stdin.read())
+        if not mail.is_multipart():
+            print("Could not find any attachments")
+            sys.exit(1)
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            found_pdf = False
+            for part in mail.get_payload():
+                if part.get_content_type() == "application/pdf":
+                    found_pdf = True
+                    payload = part.get_payload(decode=True)
+                    filename = os.path.join(tempdir, part.get_filename())
+                    with open(filename, "wb") as f:
+                        f.write(payload)
+                    env = os.environ.copy()
+                    env["HOME"] = Path.home()
+                    proc = subprocess.run(
+                        [options.path_rmapi, 'put', filename],
+                        timeout=20, env=env,
+                        stdin=subprocess.PIPE,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT
+                        )
+                    print(proc.stdout)
+                    proc.check_returncode()
+
+        if found_pdf == False:
+            print("Could not find any PDF attachments")
+            sys.exit(1)
+
+
+if __name__ == "__main__":
+    usage = "usage: %prog [options] SENDER"
+    parser = OptionParser(usage=usage)
+    parser.add_option('-a', '--allow-sender',
+        type='string', action='append', metavar='ALLOWED_SENDERS',
+        default=[], dest='allowed_senders',
+        help='Limit senders to the given address only. Can be used multiple times')
+    parser.add_option('-r', '--rmapi',
+        type='string', action='store',
+        default="~/go/bin/rmapi", dest='path_rmapi',
+        help='Path to the rmapi binary. Defaults to ~/go/bin/rmapi')
+    options, args = parser.parse_args()
+    if len(args) == 0:
+        parser.error("You have to specify a sender address")
+    mailer = Mail2reMarkable()
+    mailer.run(args[0], options)
+
+# vim:ts=4:sw=4:et
