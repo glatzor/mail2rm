@@ -12,7 +12,7 @@ Installation
 ------------
 
  1. Download rmapi from <https://github.com/juruen/rmapi/releases>
-    and copy the extractable binary to your server e.g.
+    and copy the executable binary to your server e.g.
     to ```/usr/local/bin/rmapi```
 
  2. Add a separate user to your server (here Debian/Ubuntu):
