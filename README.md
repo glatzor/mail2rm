@@ -41,7 +41,7 @@ Installation
     statemens with your email addresses. The -r/--rmapi option
     specifies the path to the rmapi executable. 
 
-    Add a check_recipient_access rule in master.cf:
+    Add a check_recipient_access rule in main.cf:
     ```
     smtpd_recipient_restrictions =
         [...]
