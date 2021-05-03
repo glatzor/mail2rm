@@ -50,7 +50,7 @@ Installation
 
     Add the destination address to recipient_access file:
     ```
-    remarkable@example.com FILTER mail2rm:dummy
+    mail2rm@example.com FILTER mail2rm:dummy
     ```
 
     Update and reload configuration:
