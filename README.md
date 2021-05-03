@@ -18,7 +18,7 @@ Installation
  2. Add a separate user to your server (here Debian/Ubuntu):
 
     ```bash
-    adduser --system mail2rm
+    adduser --system remarkable
     ```
 
  3. Copy the mail2rm script to your server e.g. to
@@ -27,14 +27,14 @@ Installation
  4. Register rmapi as the mail2rm user
 
     ```bash
-    sudo -u mail2rm rmapi
+    sudo -u remarkable rmapi
     ```
 
  5. Integrate mail2rm into postfix.
 
     Add the filter to master.cf:
     ```
-    mail2rm unix - n n - 50 pipe flags=F user=mail2rm argv=/usr/local/bin/mail2rm -a mymail@example.com -a workmail@example.com -r /usr/local/bin/rmapi ${sender}
+    mail2rm unix - n n - 50 pipe flags=F user=remarkable argv=/usr/local/bin/mail2rm -a mymail@example.com -a workmail@example.com -r /usr/local/bin/rmapi ${sender}
     ```
     The -a/--allowed sender option allows to limit the addresses which can send
     documents. The option can be used multiple times. Replace the above -a
@@ -50,7 +50,7 @@ Installation
 
     Add the destination address to recipient_access file:
     ```
-    mail2rm@example.com FILTER mail2rm:dummy
+    remarkable@example.com FILTER mail2rm:dummy
     ```
 
     Update and reload configuration:
